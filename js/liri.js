@@ -1,6 +1,6 @@
 // Write the code you need to grab the data from keys.js.
 
-var client 			= require('./keys');
+var client			= require('./keys.js');
 
 // Then store the keys in a variable.
 
@@ -12,7 +12,7 @@ var request			= require('request');
 var fs				= require('fs');
 var argvArray		= process.argv;
 var command 		= process.argv[2];
-var title 			= argvArray.slice(3);
+var title			= argvArray.slice(3);
 var titleCombined	= title.join(" ");
 var toAppend		= command + " " + titleCombined + ",";
 
@@ -45,7 +45,7 @@ else if (command == 'spotify-this-song') {
 		// Is this the correct search format??
 		titleCombined = 'The Sign Ace of Base';
 	}
-	spotify.search(type: 'track', query: 'titleCombined', function(err, data) {
+	spotify.search({type: 'track', query: 'titleCombined' }, function(err, data) {
 		// If there is an error, logs it and stops running:
 		if (err) {
 			console.log("Error occurred: " + err);
@@ -76,8 +76,8 @@ else if (command == 'movie-this') {
 	var queryURL = "http://www.omdbapi.com/?t=" + titleCombined + "&y=&plot=short&tomatoes=true&r=json";
 	request(queryURL, function(error, response, body) {
 		// If there is an error, log it and stop running:
-		if (err) {
-			console.log("Error occurred: " + err);
+		if (error) {
+			console.log("Error occurred: " + error);
 			// Stops running the program:
 			return;
 		}
@@ -122,7 +122,25 @@ else if (command == 'do-what-it-says') {
 			process.argv[3] = dataArray[1];
 
 			if (process.argv[2] == 'spotify-this-song') {
-
+				spotify.search({type: 'track', query: 'titleCombined' }, function(err, data) {
+					// If there is an error, logs it and stops running:
+					if (err) {
+						console.log("Error occurred: " + err);
+						// Stops running the program if there was an error:
+						return;
+					}
+					// If there is no error, executes the search:
+					else {
+						// Artist:
+						console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 3));
+						// Track Title:
+						console.log("Track: " + JSON.stringify(data.tracks.items[0].name, null, 3));
+						// Preview Link:
+						console.log("Preview Link: " + JSON.stringify(data.tracks.items[0].preview_url, null, 3));
+						// Album:
+						console.log("Album: " + JSON.stringify(data.tracks.items[0].album.name, null, 3));
+					}
+				});
 			}
 		}
 	});
